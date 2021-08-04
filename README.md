@@ -44,7 +44,7 @@ scripts to set up and run simulation experiment using gen3sis
   
     ESH_run_simulation.R                        # script to run a single gen3sis simulation
     
- scripts to for data analysis
+ scripts for data analysis
     
     ESH_empirical_summary_statistic_metaanalysis.R   # script to run metanalysis on empirical summary statistics
     
