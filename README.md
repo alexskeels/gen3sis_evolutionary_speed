@@ -2,7 +2,7 @@
 
 Skeels, A., Bach, W., Hagen, O., Jetz, W., Pellissier, L. in prep. 
 
-R code and data from a study of temperature and body size dependant rates of population divergence in terrestrial vertebrates using gen3sis.
+R code and data from a study of temperature and body size dependant rates of population divergence in tetrapods using gen3sis.
 
 All scripts written by Alexander Skeels: alexander.skeels@gmail.com
 
@@ -10,7 +10,7 @@ Feel free to ask me any questions!
 
 #~~~~~~ data
 
-required data for gene3sis simulation
+data used and generated in this study
 
       m0_summary_statistics.txt         # summary statistics for m0
   
@@ -23,6 +23,8 @@ required data for gene3sis simulation
       empirical_summary_statistics.csv  # summary statistics for empirical tetrapod data
   
       scotese_1D_landscapes.rds         # paleo-temperature and ariditylandscape data 
+      
+
   
 #~~~~~~ scripts/gen3sis
 
