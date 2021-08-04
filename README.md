@@ -26,7 +26,7 @@ data used and generated in this study
       
 
   
-#~~~~~~ scripts/gen3sis
+#~~~~~~ scripts
 
 scripts to set up and run simulation experiment using gen3sis
   
