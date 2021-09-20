@@ -375,7 +375,7 @@ for(i in c(1:length(m_files))){
     
     # Div rates
     tree_metrics <- left_join(ES,ED, by ="Species", match = "all")
-    tree_metrics$DivRate <- 1/tree_metrics$ED
+    tree_metrics$DivRate <- 1/tree_metrics$ES
     
     #MRD three ways
     MRD_n <- data.frame(MRD_n = distRoot(phy, tips = "all", method = c("nNodes")))

@@ -434,7 +434,7 @@ summary(meta_sr_la)
 summary(meta_sr_te)
 
 tdf <- taxon_data[which(taxon_data$n_species > 20),]
-tdf <- tdf[which(!tdf$taxon %in% "Dibamia"),]
+
 
 length(which(tdf$DR_TE_pgls_slope > 0 & tdf$DR_TE_pgls_P_slope < 0.05)) # 4
 length(which(tdf$DR_TE_pgls_slope < 0 & tdf$DR_TE_pgls_P_slope < 0.05)) # 13
