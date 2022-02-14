@@ -38,7 +38,7 @@ library(raster)
 empirical_data <- read.csv("empirical_summary_statistics.csv")
 
 # just want to look at diverse clades
-empirical_data <- na.omit(empirical_data[which(empirical_data$n_species > 20),])
+empirical_data <- na.omit(empirical_data[which(empirical_data$n_species >= 20),])
 empirical_data$taxon <- tolower(empirical_data$taxon)
 
 

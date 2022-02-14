@@ -32,10 +32,10 @@ library(ggplot2)
 library(reshape)
 
 # data
-m0_ss <- read.table("m0_summary_stats.txt", header=T)
-m1_ss <- read.table("m1_summary_stats.txt", header=T)
-m2_ss <- read.table("m2_summary_stats.txt", header=T)
-m3_ss <- read.table("m3_summary_stats.txt", header=T)
+m0_ss <- read.table("simulation_m0_summary_stats.txt", header=T)
+m1_ss <- read.table("simulation_m1_summary_stats.txt", header=T)
+m2_ss <- read.table("simulation_m2_summary_stats.txt", header=T)
+m3_ss <- read.table("simulation_m3_summary_stats.txt", header=T)
 
 # give the model name
 m0_ss$m <- "m0"
@@ -49,15 +49,20 @@ m_ss <-  rbind(m0_ss,m1_ss,m2_ss,m3_ss)
 m_ss <- m_ss[,c(142, 30:31, 40:41, 48:49, 52:74, 93:104, 114:125)]
 
 # now load empirical data
-e_ss <- read.csv("empirical_summary_statistics.csv")
+e_ss <- read.csv("order_empirical_summary_statistics.csv")
 
 # just want to look at diverse clades
-e_ss <- na.omit(e_ss[which(e_ss$n_species > 20),])
-e_ss <- e_ss[which(!e_ss$taxon %in% "All"),]
+e_ss <- na.omit(e_ss[which(e_ss$n_species >= 20),])
 e_ss$taxon <- tolower(e_ss$taxon)
-
-# need to do some renaming
+colnames(e_ss)[which(colnames(e_ss)=="rs_kutosis")] <- "rs_kurtosis"
+colnames(e_ss)[which(colnames(e_ss)=="n_species")] <- "n_extant_diversity"
+colnames(e_ss) <- gsub("_p_cor", "_cor",colnames(e_ss)) # change _p_cor for posterior samplescould also change _m_cor to use MCC samples
+colnames(e_ss) <- gsub("DivRate", "DR",colnames(e_ss))
 colnames(e_ss)[which(colnames(e_ss) == "taxon")] <- "m"
+colnames(e_ss)[which(colnames(e_ss) == "collessI_post")] <- "collessI"
+colnames(e_ss)[which(colnames(e_ss) == "sackinI_mcc")] <- "sackinI"
+colnames(e_ss)[which(colnames(e_ss) == "gamma_mcc")] <- "gamma"
+
 
 # match empirical and simulated data frames
 e_ss <- e_ss[, which(colnames(e_ss) %in% colnames(m_ss))]

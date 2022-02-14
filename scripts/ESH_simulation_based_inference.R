@@ -4,7 +4,7 @@
 #
 # Author: Alexander Skeels
 #
-# Date: 11.06.2021
+# Date: 10.01.2022
 #
 # Projects: BIGEST: Evolutionary Speed Hypothesis (ESH)
 #
@@ -44,27 +44,13 @@ library(metafor)
 library(DescTools)
 
 # data
-m0_ss <- read.table("m0_summary_stats.txt", header=T)
-m1_ss <- read.table("m1_summary_stats.txt", header=T)
-m2_ss <- read.table("m2_summary_stats.txt", header=T)
-m3_ss <- read.table("m3_summary_stats.txt", header=T)
+m0_ss <- read.table("simulation_m0_summary_stats.txt", header=T)
+m1_ss <- read.table("simulation_m1_summary_stats.txt", header=T)
+m2_ss <- read.table("simulation_m2_summary_stats.txt", header=T)
+m3_ss <- read.table("simulation_m3_summary_stats.txt", header=T)
 
 # read in empirical summary statistics
-empirical_data <- read.csv("empirical_summary_statistics.csv")
-
-# just want to look at diverse clades
-empirical_data <- na.omit(empirical_data[which(empirical_data$n_species > 20),])
-empirical_data$taxon <- tolower(empirical_data$taxon)
-
-# subset and order to match simulated data
-colnames(empirical_data)[which(colnames(empirical_data) == "taxon")] <- "m"
-empirical_data <- empirical_data[, which(colnames(empirical_data) %in% colnames(m_ss_subset))]
-empirical_subset <- empirical_data[, match(colnames(m_ss_subset), colnames(empirical_data))]
-
-# check names match
-colnames(m_ss_subset)[which(!colnames(m_ss_subset) %in% colnames(empirical_subset))]
-colnames(empirical_subset)[which(!colnames(empirical_subset) %in% colnames(m_ss_subset))]
-colnames(empirical_subset) == colnames(m_ss_subset)
+empirical_data <- read.csv("order_empirical_summary_statistics.csv")
 
 ############################################################################
 ############################################################################
@@ -93,21 +79,21 @@ m3_ss_redux <- m3_ss[which(m0_ss$running_time_step==0 & m1_ss$running_time_step=
 # combine model data frames
 m_ss <- rbind(m0_ss_redux, m1_ss_redux, m2_ss_redux, m3_ss_redux)
 
-# subset to the variables which we can also estimate for empirical data
-m_ss_subset <- na.omit(m_ss[,c(142, 30:31, 40:41, 48:49, 52:74, 93:104, 114:125)])
+# subset to the 54 variables which we can also estimate for empirical data
+m_ss_subset <- na.omit(m_ss[,c(142,21, 30:31, 40:41, 48:49, 52:74, 93:104, 114:125)])
 
 # remove the 7 summary statsitics that showed poor match to the empirical data based on validation procedure (ESH_simulation_validation.R script for details)
 m_ss_subset <- m_ss_subset[, which(!colnames(m_ss_subset) %in% c("lat_bssd_cor","bs_skewness","bs_kurtosis",
                                                                  "lat_bsm_cor", "pd_bssd_cor",  "mpd_bssd_cor", "mntd_bssd_cor"))]
 
-ncol(m_ss_subset) # comparing 46 summary statistics
-nrow(m_ss_subset)
+ncol(m_ss_subset) # comparing 47 summary statistics
+nrow(m_ss_subset) # 1384 simulations
 
 # remove highly colinear variables 
 correlations <- cor(m_ss_subset[, 2:ncol(m_ss_subset)])
 highly_correlated <- sort(findCorrelation(correlations, cutoff=0.90, names=T)) 
 m_ss_subset <- m_ss_subset[,which(!colnames(m_ss_subset) %in% highly_correlated)]
-ncol(m_ss_subset)
+ncol(m_ss_subset) # 26 summarys statistics
 
 ### apply classification models ###
 
@@ -179,9 +165,6 @@ gbm_cm        <- confusionMatrix(data = gbm_test, reference = test_transformed$m
 svmLinear_cm  <- confusionMatrix(data = svmLinear_test , reference = test_transformed$m, mode = "prec_recall")
 naivebayes_cm <- confusionMatrix(data = naivebayes_test, reference = test_transformed$m, mode = "prec_recall")
 
-classification_df <- data.frame(model = c("lda", "rf", "rpart","avNNet", "gbm", "SVMLinear","naiave_bayes"), 
-                                accuracy = c(0.730, 0.732, 0.664, 0.752, 0.737, 0.752, 0.623), 
-                                kappa = c(0.640, 0.643, 0.552, 0.669, 0.649, 0.669, 0.497))
 
 # how well did each model perform
 cvValues <- resamples(list(LDA = lda_train, 
@@ -212,6 +195,10 @@ naivebayes_varI <- varImp(naivebayes_train, scale =T)
 
 # model weights
 # weight the models by their kappa values
+classification_df <- data.frame(model = c("lda", "rf", "rpart","avNNet", "gbm", "SVMLinear","naiave_bayes"), 
+                                accuracy = c(lda_cm$overall[1], rf_cm$overall[1], rpart_cm$overall[1], avNNet_cm$overall[1], gbm_cm$overall[1], svmLinear_cm$overall[1], naivebayes_cm$overall[1]), 
+                                kappa = c(lda_cm$overall[2], rf_cm$overall[2], rpart_cm$overall[2], avNNet_cm$overall[2], gbm_cm$overall[2], svmLinear_cm$overall[2], naivebayes_cm$overall[2]))
+
 weights <- classification_df$kappa / sum(classification_df$kappa)
  
 # weight the variable importance by Kappa
@@ -246,6 +233,29 @@ weightedVIF <- data.frame(VIF=weightedVIF[order(weightedVIF, decreasing=T)])
 ###########################################################################
 ###########################################################################
 
+# first subset and clean the colnames of the empirical data
+# just want to look at diverse clades
+empirical_data <- na.omit(empirical_data[which(empirical_data$n_species >= 20),])
+empirical_data$taxon <- tolower(empirical_data$taxon)
+colnames(empirical_data)[which(colnames(empirical_data) == "taxon")] <- "m"
+colnames(empirical_data)[which(colnames(empirical_data)=="rs_kutosis")] <- "rs_kurtosis"
+colnames(empirical_data)[which(colnames(empirical_data)=="n_species")] <- "n_extant_diversity"
+colnames(empirical_data) <- gsub("_p_cor", "_cor",colnames(empirical_data)) # change _p_cor for posterior samplescould also change _m_cor to use MCC samples
+colnames(empirical_data) <- gsub("DivRate", "DR",colnames(empirical_data))
+colnames(empirical_data)[which(colnames(empirical_data) == "taxon")] <- "m"
+colnames(empirical_data)[which(colnames(empirical_data) == "collessI_post")] <- "collessI"
+colnames(empirical_data)[which(colnames(empirical_data) == "sackinI_mcc")] <- "sackinI"
+colnames(empirical_data)[which(colnames(empirical_data) == "gamma_mcc")] <- "gamma"
+
+empirical_data <- empirical_data[, which(colnames(empirical_data) %in% colnames(m_ss_subset))]
+empirical_subset <- empirical_data[, match(colnames(m_ss_subset), colnames(empirical_data))]
+
+# check names match
+colnames(m_ss_subset)[which(!colnames(m_ss_subset) %in% colnames(empirical_subset))]
+colnames(empirical_subset)[which(!colnames(empirical_subset) %in% colnames(m_ss_subset))]
+colnames(empirical_subset) == colnames(m_ss_subset)
+
+
 # Process empirical data in the same way as for the simulated data
 simulated_transformed <- predict(preprocessed_values, m_ss_subset )
 empirical_transformed <- predict(preprocessed_values, empirical_subset )
@@ -276,21 +286,3 @@ for(i in 1:7){
 weighted_probabilities <- Reduce('+', class_probabilities)
 
 
-# look at support in different classes
-# Table S2
-support <- data.frame(clade = empirical_transformed$m,
-                      lda = class_predictions[[1]],
-                      rf = class_predictions[[2]],
-                      rpart = class_predictions[[3]],
-                      avNNet = class_predictions[[4]],
-                      gbm = class_predictions[[5]],
-                      svl = class_predictions[[6]],
-                      naive = class_predictions[[7]], 
-                      m0 = weighted_probabilities$m0, 
-                      m1 = weighted_probabilities$m1, 
-                      m2 = weighted_probabilities$m2,
-                      m3 = weighted_probabilities$m3)
-
-
-support[, 9:12] <- round(support[, 9:12], 3)
-write.csv(support, "table_S2.csv")

@@ -37,10 +37,10 @@ library(MDM)
 library(corrplot)
 
 # data
-m0_ss <- read.table("m0_summary_stats.txt", header=T)
-m1_ss <- read.table("m1_summary_stats.txt", header=T)
-m2_ss <- read.table("m2_summary_stats.txt", header=T)
-m3_ss <- read.table("m3_summary_stats.txt", header=T)
+m0_ss <- read.table("simulation_m0_summary_stats.txt", header=T)
+m1_ss <- read.table("simulation_m1_summary_stats.txt", header=T)
+m2_ss <- read.table("simulation_m2_summary_stats.txt", header=T)
+m3_ss <- read.table("simulation_m3_summary_stats.txt", header=T)
 
 # give models an identifier
 m0_ss$m <- "m0"
@@ -54,10 +54,10 @@ dataset$m <- as.factor(dataset$m)
 
 # subset only the variables we can extract for both empirical and simulated datasets as well as the model parameters
 # also remove simulations with missing observations as these were those which did not run successfully  (na.omit)
-dataset <- na.omit(dataset[,c(142,1:6, 30:31, 40:41, 48:49, 52:74, 93:104, 114:125)])
+dataset <- na.omit(dataset[,c(142,1:6,21, 30:31, 40:41, 48:49, 52:74, 93:104, 114:125)])
 
 # create a datset to look at correlations
-corrplot_dataset <- dataset[8:60][sort(names(dataset)[8:60])]
+corrplot_dataset <- dataset[8:61][sort(names(dataset)[8:61])]
 # Figure S13.
 corrplot(cor(corrplot_dataset), method="square", type="lower")
 
@@ -91,7 +91,7 @@ for(j_sample in 1:20){
   dataset_tmp <- dataset[runif(sample_number[j_sample], 0, nrow(dataset)),]
   
   # for each variable we will fit a BRT with a learning rate of 0.01 and a tree complexity of 1
-  for(i_var in 8:60) {
+  for(i_var in 8:61) {
     
     learn_rate <- 0.01
     # response var is summary statistic i
@@ -110,7 +110,7 @@ for(j_sample in 1:20){
     }
     var_list[[i_var]] <- brt_fit
   }
-  var_list <-  var_list[8:60]
+  var_list <-  var_list[8:61]
   
   sample_list[[j_sample]] <- var_list
   # for each sample size, we will also extract model sensitivity information including validation statistics and R2 
@@ -118,7 +118,7 @@ for(j_sample in 1:20){
   sensitivity_df <- data.frame(var= names(dataset_tmp)[8:60], omega=NA, sigma_squared_t=NA, sigma_squared_bs=NA,
                                 dispersal=NA, lambda=NA, divergence_threshold=NA, m=NA, R2=NA, cvDev=NA)
   # then loop over each summary statitic (i_var) and calultae the sensitivity infromation
-  for(i_var in 1:53){
+  for(i_var in 1:54){
     
     if(class(var_list[[i_var]]) == 'try-error'){next}
     cont <- var_list[[i_var]]$contributions # variable contributions
@@ -153,7 +153,7 @@ varss <- names(dataset_tmp)[8:ncol(dataset_tmp)]
 beta_div_list <- list() 
 
 # loop over summary statistics
-for (i_var in 1:53) {
+for (i_var in 1:54) {
   
   var <-varss[i_var]
   tmp_df <- data.frame(var=colnames(sensitivity_df)[2:8])
@@ -241,7 +241,7 @@ grid.arrange(s11_p1, s11_p2)
 
 # See how the stability of the contribution of model parameters to summary statsitics varies with sample size
 
-for(i in 1:53){
+for(i in 1:54){
   beta_div_list[[i]]$var <- varss[[i]]
 }
 
