@@ -20,7 +20,9 @@ data used and generated in this study
   
       m3_summary_statistics.txt         # summary statistics for m3
       
-      empirical_summary_statistics.csv  # summary statistics for empirical tetrapod data
+      order_empirical_summary_statistics.csv  # summary statistics for empirical tetrapod data based on Taxonomic orders
+      
+      order_empirical_summary_statistics.csv  # summary statistics for empirical tetrapod data based on 65 Myr time-slice clades
   
       scotese_1D_landscapes.rds         # paleo-temperature and ariditylandscape data 
       
