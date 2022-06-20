@@ -1,8 +1,6 @@
-# Gen3sis: Evolutionary Speed Hypothesis
+# Data and scripts for 'Temperature-dependent evolutionary speed shapes the evolution of biodiversity patterns across tetrapod radiations'
 
-Skeels, A., Bach, W., Hagen, O., Jetz, W., Pellissier, L. in prep. 
-
-R code and data from a study of temperature and body size dependant rates of population divergence in tetrapods using gen3sis.
+Skeels, A., Bach, W., Hagen, O., Jetz, W., Pellissier, L. 2022. Temperature-dependent evolutionary speed shapes the evolution of biodiversity patterns across tetrapod radiations. Systematic Biology. 
 
 All scripts written by Alexander Skeels: alexander.skeels@gmail.com
 
@@ -24,7 +22,7 @@ data used and generated in this study
       
       order_empirical_summary_statistics.csv  # summary statistics for empirical tetrapod data based on 65 Myr time-slice clades
   
-      scotese_1D_landscapes.rds         # paleo-temperature and ariditylandscape data 
+      landscapes.rds         # paleo-temperature and ariditylandscape data 
       
 
   
